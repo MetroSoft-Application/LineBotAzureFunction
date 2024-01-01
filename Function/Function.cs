@@ -18,17 +18,24 @@ namespace LineBotAzureFunction
 
         [FunctionName("Function")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log)
         {
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 log.LogInformation(requestBody);
 
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
-                string lineUserId = data?.events[0]?.source?.userId;
-                string message = data?.events[0]?.message?.text;
+                string lineUserId = null;
+                if (data?.events?.Count > 0)
+                {
+                    lineUserId = data.events[0]?.source?.userId;
+                }
+                string message = null;
+                if (data?.events?.Count > 0)
+                {
+                    message = data?.events?[0]?.message?.text;
+                }
                 log.LogInformation($"line_user_id {lineUserId}");
                 log.LogInformation($"message {message}");
                 if (string.IsNullOrEmpty(lineUserId) || string.IsNullOrEmpty(message))
@@ -37,7 +44,7 @@ namespace LineBotAzureFunction
                     return new OkObjectResult("Skip End.");
                 }
 
-                var response = message;
+                var response = ResponseMessage.GetDummyResponseMessage();
                 await SendMessageToLine(lineUserId, response);
 
                 return new OkObjectResult("Success.");
