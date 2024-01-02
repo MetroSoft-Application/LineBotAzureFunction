@@ -16,16 +16,16 @@ LineBotを提供するAzure Fuctionです。
     `LINE_CHANNEL_ACCESS_TOKEN`にLINE Messaging APIのチャネルアクセストークンを設定します。  
 
 2. **Azure Functionのデプロイ：**  
-    作成したC#コードをAzure Functionとしてデプロイします。
+    作成したC#コードをAzure Functionにデプロイします。
 
 3. **LINE Webhook URLの設定：**  
     Azure FunctionのURLをLINE Messaging APIのWebhook URLとして設定します。  
-    これにより、LINEからのメッセージがAzure Functionに送信されるようになります。
+    これにより、BotチャネルへのメッセージがAzure Functionに送信されるようになります。
 
 4. **動作確認：**  
     LINEアカウントからBotチャネルにメッセージを送信し、Azure Functionからメッセージが返ってくることを確認します。
 
 5. **機能拡張：**  
-    ResponseMessageクラスに任意のメソッドを追加することで返答メッセージをカスタマイズします。
+    `ResponseMessage`クラスの`GetResponseMessage`メソッドを修正することで返答メッセージをカスタマイズします。
 
 

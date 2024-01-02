@@ -43,8 +43,8 @@ namespace LineBotAzureFunction
                     log.LogInformation("lineUserId or message is null or empty.");
                     return new OkObjectResult("Skip End.");
                 }
-
-                var response = ResponseMessage.GetDummyResponseMessage();
+                var responseMessage = new ResponseMessage();
+                var response = responseMessage.GetResponseMessage(message);
                 await SendMessageToLine(lineUserId, response);
 
                 return new OkObjectResult("Success.");
