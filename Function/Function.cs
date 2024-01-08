@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text;
+using System.Linq;
 
 namespace LineBotAzureFunction
 {
@@ -22,8 +23,12 @@ namespace LineBotAzureFunction
         {
             try
             {
+                log.LogInformation($"Request Method: {req.Method}");
+                var clientIpAddress = req.Headers["X-Forwarded-For"].FirstOrDefault();
+                log.LogInformation($"Client IP Address: {clientIpAddress}");
+
                 var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                log.LogInformation(requestBody);
+                log.LogInformation($"Request Body: {requestBody}");
 
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
                 string lineUserId = null;
