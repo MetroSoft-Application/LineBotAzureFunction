@@ -16,6 +16,7 @@ namespace LineBotAzureFunction
     public static class Function
     {
         private static readonly string LineChannelAccessToken = Environment.GetEnvironmentVariable("LINE_CHANNEL_ACCESS_TOKEN");
+        private static readonly HttpClient httpClient = new HttpClient();
 
         [FunctionName("Function")]
         public static async Task<IActionResult> Run(
@@ -65,24 +66,21 @@ namespace LineBotAzureFunction
         {
             try
             {
-                using (var client = new HttpClient())
+                var url = "https://api.line.me/v2/bot/message/push";
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {LineChannelAccessToken}");
+
+                var postData = new
                 {
-                    var url = "https://api.line.me/v2/bot/message/push";
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {LineChannelAccessToken}");
+                    to = userId,
+                    messages = new[] { new { type = "text", text = message } }
+                };
 
-                    var postData = new
-                    {
-                        to = userId,
-                        messages = new[] { new { type = "text", text = message } }
-                    };
+                var content = new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json");
+                var response = await httpClient.PostAsync(url, content);
 
-                    var content = new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json");
-                    var response = await client.PostAsync(url, content);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new Exception($"LINE API response {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
-                    }
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"LINE API response {response.StatusCode}: {await response.Content.ReadAsStringAsync()}");
                 }
             }
             catch (Exception e)
