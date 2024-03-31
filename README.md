@@ -1,5 +1,5 @@
 ﻿
-# LineBot Azure Function
+# LineBot Azure Functions
 
 LineBotを提供するAzure Functionsです。
 
